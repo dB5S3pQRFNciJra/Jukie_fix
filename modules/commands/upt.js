@@ -18,14 +18,18 @@ function byte2mb(bytes) {
 	return `${n.toFixed(n < 10 && l > 0 ? 1 : 0)} ${units[l]}`;
 }
 
-module.exports.run = async ({ api, event }) => {
+module.exports.run = async ({ api, event, args }) => {
 	const time = process.uptime(),
 		hours = Math.floor(time / (60 * 60)),
 		minutes = Math.floor((time % (60 * 60)) / 60),
 		seconds = Math.floor(time % 60);
-
+	const axios = global.nodemodule["axios"];
 	const pidusage = await global.nodemodule["pidusage"](process.pid);
+	const res = await axios.get(`https://api.vangbanlanhat.tk/other?type=calendar`);
+	var hour = res.data.data.time.hour;
+	var minute = res.data.data.time.minute;
+	var second = res.data.data.time.second;
 
 	const timeStart = Date.now();
-	return api.sendMessage("", event.threadID, () => api.sendMessage(`⚡️Bot đã hoạt động được ${hours} giờ ${minutes} phút ${seconds} giây.\n\n⚡️Tổng người dùng: ${global.data.allUserID.length}\n⚡️Tổng Nhóm: ${global.data.allThreadID.length}\n⚡️Cpu đang sử dụng: ${pidusage.cpu.toFixed(1)}%\n⚡️Ram đang sử dụng: ${byte2mb(pidusage.memory)}\n⚡️Ping: ${Date.now() - timeStart}ms`, event.threadID, event.messageID));
+	return api.sendMessage("", event.threadID, () => api.sendMessage(`⚡️Bot đã hoạt động được ${hours} giờ ${minutes} phút ${seconds} giây.\n\n⚡️Tổng người dùng: ${global.data.allUserID.length}\n⚡️Tổng Nhóm: ${global.data.allThreadID.length}\n⚡️Cpu đang sử dụng: ${pidusage.cpu.toFixed(1)}%\n⚡️Ram đang sử dụng: ${byte2mb(pidusage.memory)}\n⚡️Ping: ${Date.now() - timeStart}ms\n\n⚡️Thời gian: ${hour}:${minute}:${second}`, event.threadID, event.messageID));
 }
